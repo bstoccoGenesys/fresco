@@ -759,7 +759,17 @@ public class TestDummyArithmeticProtocolSuite extends AbstractDummyArithmeticTes
   public void test_Real_Sqrt() {
     runTest(new MathTests.TestSqrt<>(), new TestParameters().numParties(2));
   }
+  
+  @Test
+  public void test_Real_Reciprocal() {
+    runTest(new MathTests.TestReciprocal<>(), new TestParameters().numParties(2));
+  }
 
+  @Test
+  public void test_Real_Reciprocal_Sqrt() {
+    runTest(new MathTests.TestReciprocalSquareRoot<>(), new TestParameters().numParties(2));
+  }
+  
   @Test
   public void test_Sum() {
     runTest(new MathTests.TestSum<>(), new TestParameters());

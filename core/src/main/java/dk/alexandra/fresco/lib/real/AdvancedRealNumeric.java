@@ -73,5 +73,13 @@ public interface AdvancedRealNumeric extends ComputationDirectory {
    * @return A deferred result computing computing &radic;x
    */
   DRes<SReal> sqrt(DRes<SReal> x);
+  
+  /**
+   * Calculate the reciprocal of a secret value.
+   * 
+   * @param x Secret value
+   * @return A deferred result computing 1/x;
+   */
+  DRes<SReal> reciprocal(DRes<SReal> x);
 
 }

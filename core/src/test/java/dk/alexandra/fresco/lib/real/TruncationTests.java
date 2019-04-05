@@ -7,7 +7,7 @@ import dk.alexandra.fresco.framework.TestThreadRunner.TestThreadFactory;
 import dk.alexandra.fresco.framework.builder.numeric.ProtocolBuilderNumeric;
 import dk.alexandra.fresco.framework.sce.resources.ResourcePool;
 import dk.alexandra.fresco.framework.value.SInt;
-import dk.alexandra.fresco.lib.real.fixed.utils.Truncate;
+import dk.alexandra.fresco.lib.math.integer.binary.Truncate;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
