@@ -1,10 +1,9 @@
-package dk.alexandra.fresco.lib.real.algorithms;
+package dk.alexandra.fresco.lib.real.fixed.algorithms;
 
 import dk.alexandra.fresco.framework.DRes;
 import dk.alexandra.fresco.framework.builder.Computation;
 import dk.alexandra.fresco.framework.builder.numeric.ProtocolBuilderNumeric;
 import dk.alexandra.fresco.lib.real.SReal;
-import dk.alexandra.fresco.lib.real.fixed.algorithms.ReciprocalSquareRoot;
 import java.math.BigDecimal;
 
 public class SquareRoot implements Computation<SReal, ProtocolBuilderNumeric> {
@@ -32,9 +31,9 @@ public class SquareRoot implements Computation<SReal, ProtocolBuilderNumeric> {
    * @param x
    */
   public SquareRoot(DRes<SReal> x) {
-    this.x = x;
+    this(x, null, -1);
   }
-  
+
   @Override
   public DRes<SReal> buildComputation(ProtocolBuilderNumeric builder) {
 
@@ -43,12 +42,23 @@ public class SquareRoot implements Computation<SReal, ProtocolBuilderNumeric> {
       // Computing the reciprocal of the square rooot is very fast since it does not require
       // division, so we use x * 1/sqrt(x) as our first estimate.
       if (initialValue == null) {
-        initialValue =
-          seq.realNumeric().mult(x, new ReciprocalSquareRoot(x).buildComputation(seq));
-        
+
+        int reciprocalIterations;
+        // These number has been found numerically
+        if (builder.getRealNumericContext().getPrecision() < 20) {
+          reciprocalIterations = 22;
+        } else if (builder.getRealNumericContext().getPrecision() < 28) {
+          reciprocalIterations = 32;
+        } else {
+          reciprocalIterations = 40;
+        }
+
+        initialValue = seq.realNumeric().mult(x,
+            new ReciprocalSquareRoot(x, reciprocalIterations).buildComputation(seq));
+
         /*
-         * Convergence is quadratic (the number of correct digits rougly doubles on each iteration) but
-         * our first guess is very good, so we need just a few iterations to get a good result.
+         * Convergence is quadratic (the number of correct digits rougly doubles on each iteration)
+         * but our first guess is very good, so we need just a few iterations to get a good result.
          */
         this.iterations = 2;
       }

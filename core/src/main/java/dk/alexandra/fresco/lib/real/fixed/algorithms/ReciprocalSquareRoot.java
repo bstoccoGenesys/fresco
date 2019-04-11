@@ -9,32 +9,39 @@ import dk.alexandra.fresco.lib.real.SReal;
 import dk.alexandra.fresco.lib.real.fixed.SFixed;
 import java.math.BigInteger;
 
-public class ReciprocalSquareRoot implements Computation<SReal, ProtocolBuilderNumeric> {
+class ReciprocalSquareRoot implements Computation<SReal, ProtocolBuilderNumeric> {
 
   // Input
   private final DRes<SReal> x;
+  private int iterations;
 
   /**
    * Compute the reciprocal of the square root of the input. The answer has to be larger than
-   * 2^{-defaultPrecision / 2}, so the input cannot be larger than 2^defaultPrecision.
+   * 2^{-defaultPrecision / 2}, so the input cannot be larger than 2^defaultPrecision and should be
+   * smaller than 2^{-defaultPrecision / 2}.
    * 
-   * @param input
+   * The result is computed by iterating y -> y/2 (3 - input * y^2) a given number of times.
+   * 
+   * The result is not very precise but can be used to estimate the square root of the input for use
+   * in the SquareRoot algorithm
+   * 
+   * @param input A secret value
+   * @param iterations The number of iterations.
    */
-  public ReciprocalSquareRoot(DRes<SReal> input) {
+  public ReciprocalSquareRoot(DRes<SReal> input, int iterations) {
     this.x = input;
+    this.iterations = iterations;
   }
 
   @Override
   public DRes<SReal> buildComputation(ProtocolBuilderNumeric builder) {
-
-    int iterations = 20;
 
     return builder.seq(seq -> {
       SFixed cast = (SFixed) x.out();
 
       int initialPrecision = builder.getRealNumericContext().getPrecision() / 2;
       SFixed estimate = new SFixed(seq.numeric().known(BigInteger.ONE), initialPrecision);
-      
+
       return new IterationState(1, estimate, cast);
     }).whileLoop((iterationState) -> iterationState.iteration < iterations,
         (seq, iterationState) -> {
@@ -51,8 +58,8 @@ public class ReciprocalSquareRoot implements Computation<SReal, ProtocolBuilderN
           // scale += iterationState.x.getPrecision();
           value = seq.numeric().mult(value, iterationState.input.getSInt());
 
-          BigInteger three = BigInteger.valueOf(3)
-              .shiftLeft(2 * iterationState.value.getPrecision() + iterationState.input.getPrecision());
+          BigInteger three = BigInteger.valueOf(3).shiftLeft(
+              2 * iterationState.value.getPrecision() + iterationState.input.getPrecision());
           value = seq.numeric().sub(three, value);
 
           // scale += iterationState.scale
@@ -68,7 +75,7 @@ public class ReciprocalSquareRoot implements Computation<SReal, ProtocolBuilderN
           value = new Truncate(value, shifts).buildComputation(seq);
 
           return new IterationState(iterationState.iteration + 1,
-              new SFixed(value, targetPrecision),              iterationState.input);
+              new SFixed(value, targetPrecision), iterationState.input);
         }).seq((seq, iterationState) -> iterationState.value);
   };
 

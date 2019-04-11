@@ -5,8 +5,8 @@ import dk.alexandra.fresco.framework.builder.numeric.AdvancedNumeric.RandomAddit
 import dk.alexandra.fresco.framework.builder.numeric.ProtocolBuilderNumeric;
 import dk.alexandra.fresco.lib.real.DefaultAdvancedRealNumeric;
 import dk.alexandra.fresco.lib.real.SReal;
-import dk.alexandra.fresco.lib.real.algorithms.SquareRoot;
 import dk.alexandra.fresco.lib.real.fixed.algorithms.Reciprocal;
+import dk.alexandra.fresco.lib.real.fixed.algorithms.SquareRoot;
 
 public class AdvancedFixedNumeric extends DefaultAdvancedRealNumeric {
 
@@ -31,6 +31,6 @@ public class AdvancedFixedNumeric extends DefaultAdvancedRealNumeric {
 
   @Override
   public DRes<SReal> reciprocal(DRes<SReal> x) {
-    return new Reciprocal(x).buildComputation(builder);
+    return new Reciprocal(x, 16).buildComputation(builder);
   }
 }

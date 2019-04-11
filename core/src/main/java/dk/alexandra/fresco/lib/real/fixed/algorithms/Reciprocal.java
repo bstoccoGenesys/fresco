@@ -13,39 +13,67 @@ public class Reciprocal implements Computation<SReal, ProtocolBuilderNumeric> {
 
   // Input
   private final DRes<SReal> x;
+  private int iterations;
 
   /**
    * Compute the reciprocal value of the input iteratively. The input cannot be larger than
    * <i>2<sup>defaultPrecision / 2</sup></i>.
    * 
-   * @param input
+   * This algorithm iterates over x -> x(2 - x * input).
+   * 
+   * @param input A secret value.
+   * @param iterations The number of iterations.
    */
-  public Reciprocal(DRes<SReal> input) {
+  public Reciprocal(DRes<SReal> input, int iterations) {
     this.x = input;
+    this.iterations = iterations;
   }
 
+  /**
+   * Compute the reciprocal value of the input iteratively. The input cannot be larger than
+   * <i>2<sup>defaultPrecision / 2</sup></i>.
+   * 
+   * This algorithm iterates over x -> x(2 - x * input). The number of iterations is chosen such
+   * that the relative error is < 0.5% for inputs in the interval <i>[2<sup>-8</sup>,
+   * 2<sup>8</sup>]</i> for precision at least 16. For smaller precision <i>p < 16</i> the result
+   * has to be greater than <i>2<sup>-p/2</sup></i> so the input has to be smaller than
+   * <i>2<sup>p/2</sup></i>.
+   * 
+   * @param input A secret value.
+   */
+  public Reciprocal(DRes<SReal> input) {
+    this(input,  -1);
+  }
+  
   @Override
   public DRes<SReal> buildComputation(ProtocolBuilderNumeric builder) {
 
-    int iterations = 16;
-
+    if (iterations < 0) {
+      // The number of iterations has been found numerically
+      if (builder.getRealNumericContext().getPrecision() <= 16) {
+        this.iterations = 20;
+      } else {
+        this.iterations = 30;
+      }       
+    }
+    
     return builder.seq(seq -> {
       SFixed input = (SFixed) x.out();
+      
+      // Starting point is 2^{-p/2}, so the input has to be at least 2^{p/2}
+      int initialPrecision = builder.getRealNumericContext().getPrecision() / 2;
+      SFixed estimate = new SFixed(seq.numeric().known(BigInteger.ONE), initialPrecision);
 
-      DRes<SInt> estimate = seq.numeric().known(BigInteger.ONE);
-      int initialScale = builder.getRealNumericContext().getPrecision() / 2;
-
-      return new IterationState(1, new SFixed(estimate, initialScale), input);
+      return new IterationState(1, estimate, input);
     }).whileLoop((iterationState) -> iterationState.iteration < iterations,
         (seq, iterationState) -> {
 
-          // We iterate y -> y(2 - xy)
+          // We iterate y -> y(2 - xy) and truncate only at the end of each iteration
 
           DRes<SInt> y = iterationState.value.getSInt();
 
           DRes<SInt> value = seq.numeric().mult(y, iterationState.input.getSInt());
-
-          // Subtracting
+          
           BigInteger two = BigInteger.valueOf(2)
               .shiftLeft(iterationState.input.getPrecision() + iterationState.value.getPrecision());
           value = seq.numeric().sub(two, value);
@@ -66,7 +94,7 @@ public class Reciprocal implements Computation<SReal, ProtocolBuilderNumeric> {
   private static final class IterationState implements DRes<IterationState> {
 
     private final int iteration;
-    private SFixed input, value;
+    private final SFixed input, value;
 
     private IterationState(int iteration, SFixed value, SFixed input) {
       this.iteration = iteration;
