@@ -135,8 +135,7 @@ public class MathTests {
     @Override
     public TestThread<ResourcePoolT, ProtocolBuilderNumeric> next() {
       List<BigDecimal> openInputs = Stream
-          .of(Math.pow(2.0, -DEFAULT_PRECISION / 2), 0.1,
-              1.1, Math.pow(2.0, DEFAULT_PRECISION / 2))
+          .of(Math.pow(2.0, -DEFAULT_PRECISION / 2), 0.1, 1.1, Math.pow(2.0, DEFAULT_PRECISION / 2))
           .map(BigDecimal::valueOf).collect(Collectors.toList());
 
       return new TestThread<ResourcePoolT, ProtocolBuilderNumeric>() {
@@ -159,7 +158,7 @@ public class MathTests {
 
           UnaryOperator<BigDecimal> expected = i -> BigDecimal.ONE.divide(i,
               DEFAULT_PRECISION * RealTestUtils.ceilLog2(10), RoundingMode.HALF_UP);
-          
+
           RealTestUtils.assertRelativelyEqual(
               openInputs.stream().map(expected).collect(Collectors.toList()), output, 0.005);
         }
@@ -173,8 +172,8 @@ public class MathTests {
     @Override
     public TestThread<ResourcePoolT, ProtocolBuilderNumeric> next() {
       List<BigDecimal> openInputs = Stream
-          .of(Math.pow(2.0, -DEFAULT_PRECISION / 2), Math.pow(2.0, DEFAULT_PRECISION), 0.1,
-              1.1, 10.1, 1.307 * Math.pow(2.0, DEFAULT_PRECISION / 2))
+          .of(Math.pow(2.0, -DEFAULT_PRECISION / 2), Math.pow(2.0, DEFAULT_PRECISION), 0.1, 1.1,
+              10.1, 1.307 * Math.pow(2.0, DEFAULT_PRECISION / 2))
           .map(BigDecimal::valueOf).collect(Collectors.toList());
 
       return new TestThread<ResourcePoolT, ProtocolBuilderNumeric>() {
@@ -196,7 +195,7 @@ public class MathTests {
           List<BigDecimal> output = runApplication(app);
 
           UnaryOperator<BigDecimal> expected = i -> new BigDecimal(Math.sqrt(i.doubleValue()));
-          
+
           RealTestUtils.assertRelativelyEqual(
               openInputs.stream().map(expected).collect(Collectors.toList()), output, 0.005);
         }
