@@ -26,7 +26,10 @@ public class SquareRoot implements Computation<SReal, ProtocolBuilderNumeric> {
   }
 
   /**
-   * Compute the square root of x iteratively.
+   * Compute the square root of x iteratively. The result has a relative error smaller than 0.5% for
+   * inputs in the interval <i>2<sup>-p/2</sup></i> to <i>2<sup>p</sup></i>.
+   * 
+   * For small inputs a smaller number of iterations are needed which makes the computation faster.
    * 
    * @param x
    */
