@@ -49,11 +49,11 @@ public class SquareRoot implements Computation<SReal, ProtocolBuilderNumeric> {
         int reciprocalIterations;
         // These number has been found numerically
         if (builder.getRealNumericContext().getPrecision() < 20) {
-          reciprocalIterations = 22;
+          reciprocalIterations = 24;
         } else if (builder.getRealNumericContext().getPrecision() < 28) {
-          reciprocalIterations = 32;
+          reciprocalIterations = 34;
         } else {
-          reciprocalIterations = 40;
+          reciprocalIterations = 42;
         }
 
         initialValue = seq.realNumeric().mult(x,

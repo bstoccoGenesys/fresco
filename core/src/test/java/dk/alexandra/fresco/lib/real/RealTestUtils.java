@@ -15,8 +15,9 @@ class RealTestUtils {
     BigDecimal bound = BigDecimal.ONE.setScale(precision, RoundingMode.HALF_UP)
         .divide(BigDecimal.valueOf(2.0).pow(precision), RoundingMode.HALF_UP);
     BigDecimal d = a.subtract(b).abs();
-    Assert.assertTrue(a + " == " + b + " +/- 2^"
-        + ceilLog2(d) + " but expected precision " + precision, d.compareTo(bound) <= 0);
+    Assert.assertTrue(
+        a + " == " + b + " +/- 2^" + ceilLog2(d) + " but expected precision " + precision,
+        d.compareTo(bound) <= 0);
   }
 
   static void assertEqual(List<BigDecimal> a, List<BigDecimal> b, int precision) {
@@ -24,6 +25,12 @@ class RealTestUtils {
     for (int i = 0; i < a.size(); i++) {
       assertEqual(a.get(i), b.get(i), precision);
     }
+  }
+
+  static void assertRelativelyEqual(BigDecimal expected, BigDecimal actual, double maxError) {
+    BigDecimal error = BigDecimal.ONE.subtract(expected.divide(actual, RoundingMode.HALF_UP)).abs();
+    Assert.assertTrue("Expected " + expected + " but got " + actual + " (error " + error + ")",
+        error.compareTo(BigDecimal.valueOf(maxError)) <= 0);
   }
 
   static int floorLog2(BigDecimal value) {

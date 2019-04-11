@@ -10,7 +10,6 @@ import dk.alexandra.fresco.framework.builder.numeric.ProtocolBuilderNumeric;
 import dk.alexandra.fresco.framework.sce.resources.ResourcePool;
 import dk.alexandra.fresco.framework.util.Pair;
 import dk.alexandra.fresco.lib.real.fixed.algorithms.Reciprocal;
-import dk.alexandra.fresco.lib.real.fixed.algorithms.ReciprocalSquareRoot;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -128,13 +127,14 @@ public class MathTests {
     }
   }
 
-
   public static class TestReciprocal<ResourcePoolT extends ResourcePool>
       extends TestThreadFactory<ResourcePoolT, ProtocolBuilderNumeric> {
 
     @Override
     public TestThread<ResourcePoolT, ProtocolBuilderNumeric> next() {
-      List<BigDecimal> openInputs = Stream.of(0.5, 1.5, 10.7, 100.7)
+      List<BigDecimal> openInputs = Stream
+          .of(1.1 * Math.pow(2.0, -DEFAULT_PRECISION / 2), 0.1,
+              1.1, 0.9*Math.pow(2.0, DEFAULT_PRECISION / 2))
           .map(BigDecimal::valueOf).collect(Collectors.toList());
 
       return new TestThread<ResourcePoolT, ProtocolBuilderNumeric>() {
@@ -159,45 +159,9 @@ public class MathTests {
             int idx = output.indexOf(openOutput);
 
             BigDecimal expected = new BigDecimal(1.0 / openInputs.get(idx).doubleValue());
-            RealTestUtils.assertEqual(expected, openOutput, DEFAULT_PRECISION / 2);
-          }
-        }
-      };
-    }
-  }
 
-  public static class TestReciprocalSquareRoot<ResourcePoolT extends ResourcePool>
-      extends TestThreadFactory<ResourcePoolT, ProtocolBuilderNumeric> {
-
-    @Override
-    public TestThread<ResourcePoolT, ProtocolBuilderNumeric> next() {
-      List<BigDecimal> openInputs = Stream.of(0.5, 1.5, 10.7, 100.7, 1000.7)
-          .map(BigDecimal::valueOf).collect(Collectors.toList());
-
-      return new TestThread<ResourcePoolT, ProtocolBuilderNumeric>() {
-        @Override
-        public void test() throws Exception {
-          Application<List<BigDecimal>, ProtocolBuilderNumeric> app = producer -> {
-            List<DRes<SReal>> closed1 =
-                openInputs.stream().map(producer.realNumeric()::known).collect(Collectors.toList());
-
-            List<DRes<SReal>> result = new ArrayList<>();
-            for (DRes<SReal> inputX : closed1) {
-              result.add(new ReciprocalSquareRoot(inputX).buildComputation(producer));
-            }
-
-            List<DRes<BigDecimal>> opened =
-                result.stream().map(producer.realNumeric()::open).collect(Collectors.toList());
-            return () -> opened.stream().map(DRes::out).collect(Collectors.toList());
-          };
-          List<BigDecimal> output = runApplication(app);
-
-          for (BigDecimal openOutput : output) {
-            int idx = output.indexOf(openOutput);
-
-            BigDecimal expected =
-                new BigDecimal(1.0 / Math.sqrt(openInputs.get(idx).doubleValue()));
-            RealTestUtils.assertEqual(expected, openOutput, DEFAULT_PRECISION / 2);
+            // Relative error should be smaller than 0.5%
+            RealTestUtils.assertRelativelyEqual(expected, openOutput, 0.005);
           }
         }
       };
@@ -209,9 +173,10 @@ public class MathTests {
 
     @Override
     public TestThread<ResourcePoolT, ProtocolBuilderNumeric> next() {
-      List<BigDecimal> openInputs =
-          Stream.of(/* 1000_000.0, */ 1_000.0 + 0.5 * Math.pow(2.0, DEFAULT_PRECISION), 40.1)
-              .map(BigDecimal::valueOf).collect(Collectors.toList());
+      List<BigDecimal> openInputs = Stream
+          .of(Math.pow(2.0, -DEFAULT_PRECISION / 2), Math.pow(2.0, DEFAULT_PRECISION), 0.1,
+              1.1, 10.1, 1.307 * Math.pow(2.0, DEFAULT_PRECISION / 2))
+          .map(BigDecimal::valueOf).collect(Collectors.toList());
 
       return new TestThread<ResourcePoolT, ProtocolBuilderNumeric>() {
         @Override
@@ -235,7 +200,9 @@ public class MathTests {
             int idx = output.indexOf(openOutput);
 
             BigDecimal expected = new BigDecimal(Math.sqrt(openInputs.get(idx).doubleValue()));
-            RealTestUtils.assertEqual(expected, openOutput, DEFAULT_PRECISION / 2);
+            
+            // Relative error should be smaller than 0.5%
+            RealTestUtils.assertRelativelyEqual(expected, openOutput, 0.005);
           }
         }
       };
