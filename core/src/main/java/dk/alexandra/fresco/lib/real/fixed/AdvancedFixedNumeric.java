@@ -31,6 +31,6 @@ public class AdvancedFixedNumeric extends DefaultAdvancedRealNumeric {
 
   @Override
   public DRes<SReal> reciprocal(DRes<SReal> x) {
-    return new Reciprocal(x, 16).buildComputation(builder);
+    return new Reciprocal(x).buildComputation(builder);
   }
 }
