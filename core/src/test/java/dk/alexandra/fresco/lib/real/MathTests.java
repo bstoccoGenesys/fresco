@@ -11,9 +11,11 @@ import dk.alexandra.fresco.framework.sce.resources.ResourcePool;
 import dk.alexandra.fresco.framework.util.Pair;
 import dk.alexandra.fresco.lib.real.fixed.algorithms.Reciprocal;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -133,8 +135,8 @@ public class MathTests {
     @Override
     public TestThread<ResourcePoolT, ProtocolBuilderNumeric> next() {
       List<BigDecimal> openInputs = Stream
-          .of(1.1 * Math.pow(2.0, -DEFAULT_PRECISION / 2), 0.1,
-              1.1, 0.9*Math.pow(2.0, DEFAULT_PRECISION / 2))
+          .of(Math.pow(2.0, -DEFAULT_PRECISION / 2), 0.1,
+              1.1, Math.pow(2.0, DEFAULT_PRECISION / 2))
           .map(BigDecimal::valueOf).collect(Collectors.toList());
 
       return new TestThread<ResourcePoolT, ProtocolBuilderNumeric>() {
@@ -155,14 +157,11 @@ public class MathTests {
           };
           List<BigDecimal> output = runApplication(app);
 
-          for (BigDecimal openOutput : output) {
-            int idx = output.indexOf(openOutput);
-
-            BigDecimal expected = new BigDecimal(1.0 / openInputs.get(idx).doubleValue());
-
-            // Relative error should be smaller than 0.5%
-            RealTestUtils.assertRelativelyEqual(expected, openOutput, 0.005);
-          }
+          UnaryOperator<BigDecimal> expected = i -> BigDecimal.ONE.divide(i,
+              DEFAULT_PRECISION * RealTestUtils.ceilLog2(10), RoundingMode.HALF_UP);
+          
+          RealTestUtils.assertRelativelyEqual(
+              openInputs.stream().map(expected).collect(Collectors.toList()), output, 0.005);
         }
       };
     }
@@ -196,14 +195,10 @@ public class MathTests {
           };
           List<BigDecimal> output = runApplication(app);
 
-          for (BigDecimal openOutput : output) {
-            int idx = output.indexOf(openOutput);
-
-            BigDecimal expected = new BigDecimal(Math.sqrt(openInputs.get(idx).doubleValue()));
-            
-            // Relative error should be smaller than 0.5%
-            RealTestUtils.assertRelativelyEqual(expected, openOutput, 0.005);
-          }
+          UnaryOperator<BigDecimal> expected = i -> new BigDecimal(Math.sqrt(i.doubleValue()));
+          
+          RealTestUtils.assertRelativelyEqual(
+              openInputs.stream().map(expected).collect(Collectors.toList()), output, 0.005);
         }
       };
     }

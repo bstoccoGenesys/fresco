@@ -33,11 +33,26 @@ class RealTestUtils {
         error.compareTo(BigDecimal.valueOf(maxError)) <= 0);
   }
 
+  static void assertRelativelyEqual(List<BigDecimal> expected, List<BigDecimal> actual, double maxError) {
+    Assert.assertEquals(expected.size(), actual.size());
+    for (int i = 0; i < expected.size(); i++) {
+      assertRelativelyEqual(expected.get(i), actual.get(i), maxError);
+    }
+  }
+  
   static int floorLog2(BigDecimal value) {
-    return (int) Math.floor(Math.log(value.doubleValue()) / Math.log(2.0));
+    return floorLog2(value.doubleValue());
+  }
+
+  static int floorLog2(double value) {
+    return (int) Math.floor(Math.log(value) / Math.log(2.0));
   }
 
   static int ceilLog2(BigDecimal value) {
-    return (int) Math.ceil(Math.log(value.doubleValue()) / Math.log(2.0));
+    return ceilLog2(value.doubleValue());
+  }
+  
+  static int ceilLog2(double value) {
+    return (int) Math.ceil(Math.log(value) / Math.log(2.0));    
   }
 }
