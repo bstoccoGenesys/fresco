@@ -14,8 +14,6 @@ public class RealNumericContext {
   /**
    * Returns the precision, eg. the number of bits used for the fractional part in fixed number
    * arithmetic.
-   * 
-   * @return
    */
   public int getPrecision() {
     return precision;

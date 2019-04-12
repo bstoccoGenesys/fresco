@@ -18,9 +18,9 @@ public class Reciprocal implements Computation<SReal, ProtocolBuilderNumeric> {
   /**
    * Compute the reciprocal value of the input iteratively. The input cannot be larger than
    * <i>2<sup>defaultPrecision / 2</sup></i>.
-   * 
+   *
    * This algorithm iterates over x -> x(2 - x * input).
-   * 
+   *
    * @param input A secret value.
    * @param iterations The number of iterations.
    */
@@ -32,19 +32,19 @@ public class Reciprocal implements Computation<SReal, ProtocolBuilderNumeric> {
   /**
    * Compute the reciprocal value of the input iteratively. The input cannot be larger than
    * <i>2<sup>defaultPrecision / 2</sup></i>.
-   * 
+   *
    * This algorithm iterates over x -> x(2 - x * input). The number of iterations is chosen such
    * that the relative error is < 0.5% for inputs in the interval <i>[2<sup>-8</sup>,
    * 2<sup>8</sup>]</i> for precision at least 16. For smaller precision <i>p < 16</i> the result
    * has to be greater than <i>2<sup>-p/2</sup></i> so the input has to be smaller than
    * <i>2<sup>p/2</sup></i>.
-   * 
+   *
    * @param input A secret value.
    */
   public Reciprocal(DRes<SReal> input) {
-    this(input,  -1);
+    this(input, -1);
   }
-  
+
   @Override
   public DRes<SReal> buildComputation(ProtocolBuilderNumeric builder) {
 
@@ -54,12 +54,12 @@ public class Reciprocal implements Computation<SReal, ProtocolBuilderNumeric> {
         this.iterations = 20;
       } else {
         this.iterations = 30;
-      }       
+      }
     }
-    
+
     return builder.seq(seq -> {
       SFixed input = (SFixed) x.out();
-      
+
       // Starting point is 2^{-p/2}, so the input has to be at least 2^{p/2}
       int initialPrecision = builder.getRealNumericContext().getPrecision() / 2;
       SFixed estimate = new SFixed(seq.numeric().known(BigInteger.ONE), initialPrecision);
@@ -73,7 +73,7 @@ public class Reciprocal implements Computation<SReal, ProtocolBuilderNumeric> {
           DRes<SInt> y = iterationState.value.getSInt();
 
           DRes<SInt> value = seq.numeric().mult(y, iterationState.input.getSInt());
-          
+
           BigInteger two = BigInteger.valueOf(2)
               .shiftLeft(iterationState.input.getPrecision() + iterationState.value.getPrecision());
           value = seq.numeric().sub(two, value);
@@ -89,7 +89,7 @@ public class Reciprocal implements Computation<SReal, ProtocolBuilderNumeric> {
           return new IterationState(iterationState.iteration + 1,
               new SFixed(value, targetPrecision), iterationState.input);
         }).seq((seq, iterationState) -> iterationState.value);
-  };
+  }
 
   private static final class IterationState implements DRes<IterationState> {
 

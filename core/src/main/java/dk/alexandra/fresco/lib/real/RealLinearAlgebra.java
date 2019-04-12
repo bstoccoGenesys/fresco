@@ -52,7 +52,7 @@ public interface RealLinearAlgebra extends ComputationDirectory {
    * @return A deferred result computing a-b
    */
   DRes<Matrix<DRes<SReal>>> sub(DRes<Matrix<DRes<SReal>>> a, Matrix<BigDecimal> n);
-  
+
   /**
    * Multiplies two secret values and returns the result.
    *
@@ -64,7 +64,7 @@ public interface RealLinearAlgebra extends ComputationDirectory {
 
   /**
    * Multiply a matrix to a vector.
-   * 
+   *
    * @param a First secret value
    * @param b Second secret value
    * @return A deferred result computing a*v
@@ -73,7 +73,7 @@ public interface RealLinearAlgebra extends ComputationDirectory {
 
   /**
    * Multiply a matrix to a vector.
-   * 
+   *
    * @param a Secret matrix
    * @param v Public vector
    * @return A deferred result computing a*v
@@ -82,7 +82,7 @@ public interface RealLinearAlgebra extends ComputationDirectory {
 
   /**
    * Multiply a matrix to a vector.
-   * 
+   *
    * @param a Public matrix
    * @param v Secret vector
    * @return A deferred result computing a*v
@@ -100,7 +100,7 @@ public interface RealLinearAlgebra extends ComputationDirectory {
 
   /**
    * Multiply a public value with a secret value.
-   * 
+   *
    * @param a Public value
    * @param b Secret value
    * @return A deferred result computing a*b
@@ -141,7 +141,7 @@ public interface RealLinearAlgebra extends ComputationDirectory {
    * @return A deferred result computing a^t
    */
   DRes<Matrix<DRes<SReal>>> transpose(DRes<Matrix<DRes<SReal>>> a);
-  
+
   /**
    * Closes a public matrix value. If the MPC party calling this method is not providing input, just
    * use null as the input value.

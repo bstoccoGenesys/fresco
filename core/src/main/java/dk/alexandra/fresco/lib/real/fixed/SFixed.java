@@ -10,6 +10,7 @@ import dk.alexandra.fresco.lib.real.SReal;
  * (avaialble via {@link #getPrecision()}) that may vary from value to value.
  */
 public class SFixed implements SReal, DRes<SReal> {
+
   private final DRes<SInt> value;
   private final int precision;
 

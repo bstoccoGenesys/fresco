@@ -102,7 +102,7 @@ public interface RealNumeric extends ComputationDirectory {
 
   /**
    * Create a secret real value from a secret integer value representing the same value.
-   * 
+   *
    * @param value A secret integer.
    * @return A secret real with the same value as the input
    */

@@ -10,8 +10,8 @@ import java.util.List;
 
 public abstract class DefaultAdvancedRealNumeric implements AdvancedRealNumeric {
 
-  protected final ProtocolBuilderNumeric builder;
   private static final BigDecimal TWO = BigDecimal.valueOf(2);
+  protected final ProtocolBuilderNumeric builder;
 
   protected DefaultAdvancedRealNumeric(ProtocolBuilderNumeric builder) {
     this.builder = builder;
@@ -125,22 +125,22 @@ public abstract class DefaultAdvancedRealNumeric implements AdvancedRealNumeric 
    *
    * The approximation is based on the series ln(x) = 2t * \sum_{k=0}^\infty 1 / (2k + 1) t^{2k} for
    * t = (x-1) / (x+1).
-   * 
+   *
    * The approximation is best for small inputs (the error is bounded by 0.0014 for 0.1 < x < 10 and
    * by 0.24 for 0.1 < x < 50, but for larger inputs the error term is rather big. To compensate,
    * the error term can be approximated bye one of the following polynomials (constant term first,
    * optimised for x < 1000):
-   * 
+   *
    * Linear [-0.02771369259544744, -0.0030294386027190858]
-   * 
+   *
    * Quadratic [0.05195678095575384, -0.005443079020109276, 3.0571652211820656E-6]
-   * 
+   *
    * Cubic [0.08080174700015502, -0.006644457297258054, 6.849009473279065E-6,
    * -2.8055166996698435E-9]
-   * 
+   *
    * Quartic [0.07313345035356501, -0.0062624966485768045, 4.556408175523062E-6,
    * 1.3107035589962076E-9, -2.243237315197184E-12]
-   * 
+   *
    * @param x The input value.
    * @returns A deferred result approximating the natural logarithm of x.
    */

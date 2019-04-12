@@ -86,11 +86,11 @@ public abstract class DefaultLinearAlgebra implements RealLinearAlgebra {
    * @param a matrix of type <code>A</code>
    * @param b matrix of type <code>B</code>
    * @param operator the operator which takes an element of type <code>A</code> and type
-   *        <code>B</code> to give an element of type <code>C</code>
+   * <code>B</code> to give an element of type <code>C</code>
    * @return A matrix of type <code>C</code> which is the result of the entrywise application of the
-   *         <code>operator</code> of the two matrices
+   * <code>operator</code> of the two matrices
    * @throws IllegalArgumentException if matrices <code>a</code> and <code>b</code> are not of eqaul
-   *         dimensions.
+   * dimensions.
    */
   private <A, B, C> DRes<Matrix<C>> entrywiseBinaryOperator(ProtocolBuilderNumeric builder,
       Matrix<A> a, Matrix<B> b, BiFunction<ProtocolBuilderNumeric, Pair<A, B>, C> operator) {
@@ -137,7 +137,6 @@ public abstract class DefaultLinearAlgebra implements RealLinearAlgebra {
   }
 
 
-
   @Override
   public DRes<Matrix<DRes<SReal>>> mult(DRes<Matrix<DRes<SReal>>> a, Matrix<BigDecimal> b) {
     return builder.seq(seq -> {
@@ -169,7 +168,7 @@ public abstract class DefaultLinearAlgebra implements RealLinearAlgebra {
    * @param a Matrix of type <code>A</code>
    * @param b Matrix of type <code>B</code>
    * @param innerProductOperator An inner product operator which takes the inner product of a vector
-   *        of type <code>A</code> and type <code>B</code> to produce a value of type <code>C</code>
+   * of type <code>A</code> and type <code>B</code> to produce a value of type <code>C</code>
    * @return the product of the two matrices
    */
   private <A, B, C> DRes<Matrix<C>> mult(ProtocolBuilderNumeric builder, Matrix<A> a, Matrix<B> b,
@@ -224,7 +223,7 @@ public abstract class DefaultLinearAlgebra implements RealLinearAlgebra {
    * @param a A value of type <code>A</code>
    * @param b Matrix of type <code>B</code>
    * @param multiplicationOperator An multiplication operator which multiplies an element of type
-   *        <code>A</code> and type <code>B</code> to give an element of type <code>C</code>
+   * <code>A</code> and type <code>B</code> to give an element of type <code>C</code>
    * @return the scaled matrix
    */
   private <A, B, C> DRes<Matrix<C>> scale(ProtocolBuilderNumeric builder, A a, Matrix<B> b,
@@ -269,7 +268,7 @@ public abstract class DefaultLinearAlgebra implements RealLinearAlgebra {
    * @param a Matrix of type <code>A</code>
    * @param v Vector of type <code>B</code>
    * @param innerProductOperator An inner product operator which takes the inner product of a vector
-   *        of type <code>A</code> and type <code>B</code> to produce a value of type <code>C</code>
+   * of type <code>A</code> and type <code>B</code> to produce a value of type <code>C</code>
    * @return A vector of type <code>C</code> which is the product of the matrix and the vector
    */
   private <A, B, C> DRes<Vector<C>> vectorMult(ProtocolBuilderNumeric builder, Matrix<A> a,

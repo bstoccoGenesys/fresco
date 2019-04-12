@@ -19,12 +19,12 @@ class ReciprocalSquareRoot implements Computation<SReal, ProtocolBuilderNumeric>
    * Compute the reciprocal of the square root of the input. The answer has to be larger than
    * 2^{-defaultPrecision / 2}, so the input cannot be larger than 2^defaultPrecision and should be
    * smaller than 2^{-defaultPrecision / 2}.
-   * 
+   *
    * The result is computed by iterating y -> y/2 (3 - input * y^2) a given number of times.
-   * 
+   *
    * The result is not very precise but can be used to estimate the square root of the input for use
    * in the SquareRoot algorithm
-   * 
+   *
    * @param input A secret value
    * @param iterations The number of iterations.
    */
@@ -77,7 +77,7 @@ class ReciprocalSquareRoot implements Computation<SReal, ProtocolBuilderNumeric>
           return new IterationState(iterationState.iteration + 1,
               new SFixed(value, targetPrecision), iterationState.input);
         }).seq((seq, iterationState) -> iterationState.value);
-  };
+  }
 
   private static final class IterationState implements DRes<IterationState> {
 
