@@ -36,9 +36,9 @@ public interface AdvancedRealNumeric extends ComputationDirectory {
   DRes<SReal> innerProductWithPublicPart(List<BigDecimal> a, List<DRes<SReal>> b);
 
   /**
-   * Calcualte the exponential function of a secret input x. The result is mmore precise for small
-   * inputs, so the input should be scaled if possible (note that <i>exp(n x) =
-   * exp(x)<sup>n</sup></i>).
+   * Calculate the exponential function of a secret input x. The input must be smaller than
+   * <i>2<sup>p</sup></i> where <i>p</i> is the fixed point precision, and should be scaled if this
+   * is not the case.
    *
    * @param x Secret value
    * @return A deferred result computing computing e<sup>x</sup>
@@ -58,9 +58,9 @@ public interface AdvancedRealNumeric extends ComputationDirectory {
   DRes<SReal> random();
 
   /**
-   * Calculate the natural logarithm of a secret value. Works best for small inputs (< 10), so
-   * larger inputs should be scaled is possible (note that <i>log(x * b<sup>e</sup>) = log(x) + e
-   * log(b)</i>).
+   * Calculate the natural logarithm of a secret value. The input must be smaller than
+   * <i>2<sup>p</sup></i> where <i>p</i> is the fixed point precision, and should be scaled if this
+   * is not the case.
    *
    * @param x Secret value
    * @return A deferred result computing computing log(x)
@@ -68,7 +68,9 @@ public interface AdvancedRealNumeric extends ComputationDirectory {
   DRes<SReal> log(DRes<SReal> x);
 
   /**
-   * Calculate the square root of a secret value.
+   * Calculate the square root of a secret value. The input must be smaller than
+   * <i>2<sup>p</sup></i> where <i>p</i> is the fixed point precision, and should be scaled if this
+   * is not the case.
    *
    * @param x Secret value
    * @return A deferred result computing &radic;x
@@ -77,7 +79,9 @@ public interface AdvancedRealNumeric extends ComputationDirectory {
 
   /**
    * Calculate a power of two <i>c = 2<sup>-k</sup></i> such that the product <i>x * c</i> is in the
-   * interval <i>[0.5, 1]</i>.
+   * interval <i>[0.5, 1]</i>. Note that the input must be smaller than <i>2<sup>p</sup></i> where
+   * <i>p</i> is the fixed point precision in order for <i>c</i> to be representable. If a larger
+   * input is chosen, <i>k</i> will still be correct but <i>c</i> will be zero.
    * 
    * @param x A secret non-zero value
    * @return A deferred result computing the pair <i>(c, k)</i> as decribed above.
@@ -85,7 +89,8 @@ public interface AdvancedRealNumeric extends ComputationDirectory {
   DRes<Pair<DRes<SReal>, DRes<SInt>>> normalize(DRes<SReal> x);
   
   /**
-   * Calculate the reciprocal of a secret value.
+   * Calculate the reciprocal of a secret value. The input must be smaller than <i>2<sup>p</sup></i>
+   * where <i>p</i> is the fixed point precision, and should be scaled if this is not the case.
    * 
    * @param x A secret value
    * @return A deferred result computing 1/x
