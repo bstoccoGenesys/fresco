@@ -12,7 +12,12 @@ import java.math.BigInteger;
 
 public class InputSumExample {
 
-  public InputSumExample(){
+  int value;
+  int numParties;
+	
+  public InputSumExample(int value, int numParties){
+	  this.value = value;
+	  this.numParties = numParties;
   }
   
   /**
@@ -27,22 +32,13 @@ public class InputSumExample {
     InputApplication inputApp;
 
     int myId = resourcePool.getMyId();
-    int[] inputs = new int[]{1, 2, 3, 7, 8, 12, 15, 17};
-    if (myId == 1) {
-      // I input
-      inputApp = new InputApplication(inputs);
-    } else {
-      // I do not input
-      inputApp = new InputApplication(inputs.length);
-    }
+    inputApp = new InputApplication(value, myId, numParties);
+    
     SumAndOutputApplication app = new SumAndOutputApplication(inputApp);
 
     BigInteger result = sce.runApplication(app, resourcePool, network);
-    int sum = 0;
-    for (int i : inputs) {
-      sum += i;
-    }
-    System.out.println("Expected result: " + sum + ", Result was: " + result);
+
+    System.out.println("Result was: " + result);
   }
 
   /**
@@ -53,7 +49,11 @@ public class InputSumExample {
   public static <ResourcePoolT extends ResourcePool> void main(String[] args) throws IOException {
     CmdLineUtil<ResourcePoolT, ProtocolBuilderNumeric> util = new CmdLineUtil<>();
 
-    util.parse(args);
+    String id = args[0];
+    Integer total = Integer.parseInt(args[1]);
+    String[] staticArgs = new String[] {"-e", "SEQUENTIAL_BATCHED", "-i", id, "-l", "INFO", "-p", "1:localhost:8081", "-p", "2:localhost:8082", "-p", "3:localhost:8083", "-p", "4:localhost:8080", "-s", "spdz", "-Dspdz.preprocessingStrategy=DUMMY"};
+    
+    util.parse(staticArgs);
 
     ProtocolSuite<ResourcePoolT, ProtocolBuilderNumeric> psConf = util.getProtocolSuite();
 
@@ -61,7 +61,7 @@ public class InputSumExample {
         new SecureComputationEngineImpl<>(psConf, util.getEvaluator());
 
     ResourcePoolT resourcePool = util.getResourcePool();
-    new InputSumExample().runApplication(sce, resourcePool, util.getNetwork());
+    new InputSumExample(total, 4).runApplication(sce, resourcePool, util.getNetwork());
     
     util.closeNetwork();
     sce.shutdownSCE();

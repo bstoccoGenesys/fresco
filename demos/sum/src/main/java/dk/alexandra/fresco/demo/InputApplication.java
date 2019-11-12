@@ -7,6 +7,7 @@ import dk.alexandra.fresco.framework.builder.numeric.ProtocolBuilderNumeric;
 import dk.alexandra.fresco.framework.value.SInt;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,16 +19,15 @@ import java.util.stream.Collectors;
  */
 public class InputApplication implements Application<List<SInt>, ProtocolBuilderNumeric> {
 
-  private int[] inputs;
+  private int value;
   private int length;
+  private int myId;
+  private int numParties;
 
-  public InputApplication(int[] inputs) {
-    this.inputs = inputs;
-    this.length = inputs.length;
-  }
-
-  public InputApplication(int length) {
-    this.length = length;
+  public InputApplication(int value, int myId, int numParties) {
+    this.value = value;
+    this.myId = myId;
+    this.numParties = numParties;
   }
 
   @Override
@@ -36,12 +36,19 @@ public class InputApplication implements Application<List<SInt>, ProtocolBuilder
     producer.par(par -> {
       Numeric numeric = par.numeric();
       List<DRes<SInt>> result = new ArrayList<>(length);
-      for (int i = 0; i < this.length; i++) {
+      for (int i = 1; i <= this.numParties; i++) {
         // create wires
-        if (this.inputs != null) {
-          result.add(numeric.input(BigInteger.valueOf(this.inputs[i]), 1));
+    	 
+    	/**
+    	 * For n parties each party will add its value towards the sum under the position matching its id.
+    	 * For example, party 1 will add the first value, party 5 will add the 5th value.
+    	 * It seems each party executing this code must identify each party contributing in the same order.
+    	 * If this party is not going to contribute a value then it provides a null value locally. 
+    	 */
+        if (i == myId) {
+        	result.add(numeric.input(BigInteger.valueOf(value), i));
         } else {
-          result.add(numeric.input(null, 1));
+        	result.add(numeric.input(null, i));
         }
       }
       return () -> result.stream().map(DRes::out).collect(Collectors.toList());
